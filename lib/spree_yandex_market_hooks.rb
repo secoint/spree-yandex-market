@@ -1,5 +1,6 @@
-class SpreeYandexMarketHooks < Spree::ThemeSupport::HookListener
-  insert_after :admin_tabs do
-    %(<%=  tab(:yandex_market, { :route => "admin_yandex_market_settings" })  %>)
-  end
-end
+Deface::Override.new(
+  :virtual_path => "layouts/admin",
+  :name => "yandex_market_admin_tabs",
+  :insert_after => "[data-hook='admin_tabs'], #admin_tabs[data-hook]",
+  :text => "<%=  tab(:yandex_market, { :route => \"admin_yandex_market_settings\" }) %>",
+  :disabled => false)
