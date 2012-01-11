@@ -33,8 +33,9 @@
 
 Установка
 ---------
-        script/extension install git://github.com/pronix/spree-yandex-market.git
-        rake db:migrate
+        Add to Gemfile: gem 'spree_yandex_market', :git => 'git://github.com/romul/spree-yandex-market.git'
+        Run bundle install
+        Run rails g spree_yandex_market:install
         Для периодического формирования файла экспорта запишите в крон следущую команду:
         cd #{ RAILS_ROOT } && RAILS_ENV=#{RAILS_ENV} rake spree:extensions:yandex_market:generate_ym
 
@@ -51,4 +52,4 @@
 
 
 
-Copyright (c) 2010 pronix, divineforest
+Copyright (c) 2010-2012 pronix, divineforest, romul
