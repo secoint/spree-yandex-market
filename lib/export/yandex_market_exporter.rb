@@ -113,7 +113,7 @@ module Export
         # На самом деле наличие shipping_category не обязательно должно быть чтобы была возможна доставка
         # смотри http://spreecommerce.com/documentation/shipping.html#shipping-category
         xml.delivery               true
-        xml.local_delivery_cost    @config.preferred_local_delivery_cost if @config.preferred_local_delivery_cost
+        #xml.local_delivery_cost    @config.preferred_local_delivery_cost if @config.preferred_local_delivery_cost
         xml.typePrefix             product_properties[@config.preferred_type_prefix] if product_properties[@config.preferred_type_prefix]
         xml.name                   product.name
         xml.vendor                 product_properties[@config.preferred_vendor] if product_properties[@config.preferred_vendor]
@@ -134,7 +134,7 @@ module Export
       xml.offer(opt) {
         shared_xml(xml, product, cat)
         xml.delivery               true
-        xml.local_delivery_cost @config.preferred_local_delivery_cost 
+        #xml.local_delivery_cost @config.preferred_local_delivery_cost 
         xml.name                product.name
         xml.vendorCode          product_properties[@config.preferred_vendor_code]
         xml.description         product.description
@@ -152,7 +152,7 @@ module Export
         shared_xml(xml, product, cat)
         
         xml.delivery true
-        xml.local_delivery_cost @config.preferred_local_delivery_cost
+        #xml.local_delivery_cost @config.preferred_local_delivery_cost
         
         xml.author product_properties[@config.preferred_author]
         xml.name product.name
@@ -249,7 +249,7 @@ module Export
         shared_xml(xml, product, cat)
         
         xml.delivery true        
-        xml.local_delivery_cost @config.preferred_local_delivery_cost
+        #xml.local_delivery_cost @config.preferred_local_delivery_cost
         xml.worldRegion ""
         xml.country ""
         xml.region ""
@@ -274,7 +274,7 @@ module Export
       xml.offer(opt) {
         shared_xml(xml, product, cat)
         xml.delivery true                
-        xml.local_delivery_cost @config.preferred_local_delivery_cost
+        #xml.local_delivery_cost @config.preferred_local_delivery_cost
         xml.name product.name
         xml.place product_properties[@config.preferred_place]
         xml.hall(:plan => product_properties[@config.preferred_hall_url_plan]) { xml << product_properties[@config.preferred_hall] }
