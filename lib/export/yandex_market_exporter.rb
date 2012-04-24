@@ -17,19 +17,20 @@ module Export
       @host = @config.preferred_url.sub(%r[^http://],'').sub(%r[/$], '')
       ActionController::Base.asset_host = @config.preferred_url
       
-      @currencies = @config.preferred_currency.split(';').map{|x| x.split(':')}
+      @currencies = @config.preferred_currency.split(';').map{ |x| x.split(':') }
       @currencies.first[1] = 1
       
       @preferred_category = Taxon.find_by_name(@config.preferred_category)
-      @categories = @preferred_category.self_and_descendants
+      unless @preferred_category.export_to_yandex_market
+        raise "Preferred category <#{@preferred_category.name}> not included to export"
+      end
+
+      @categories = @preferred_category.self_and_descendants.where(:export_to_yandex_market => true)
       @categories_ids = @categories.collect { |x| x.id }
       
       # Nokogiri::XML::Builder.new({ :encoding =>"utf-8"}, SCHEME) do |xml|
-      Nokogiri::XML::Builder.new(:encoding =>"utf-8") do |xml|
-        xml.doc.create_internal_subset('yml_catalog',
-                                       nil,
-                                       "shops.dtd"
-                                       )
+      Nokogiri::XML::Builder.new(:encoding => 'utf-8') do |xml|
+        xml.doc.create_internal_subset('yml_catalog', nil, 'shops.dtd')
 
         xml.yml_catalog(:date => Time.now.to_s(:ym)) {
           
@@ -40,8 +41,8 @@ module Export
             
             xml.currencies { # описание используемых валют в магазине
               @currencies && @currencies.each do |curr|
-                opt = {:id => curr.first, :rate => curr[1] }
-                opt.merge!({ :plus => curr[2]}) if curr[2] && ["CBRF","NBU","NBK","CB"].include?(curr[1])
+                opt = { :id => curr.first, :rate => curr[1] }
+                opt.merge!({ :plus => curr[2] }) if curr[2] && ["CBRF","NBU","NBK","CB"].include?(curr[1])
                 xml.currency(opt)
               end
             }        
@@ -49,14 +50,14 @@ module Export
             xml.categories { # категории товара
               @categories_ids && @categories.each do |cat|
                 @cat_opt = { :id => cat.id }
-                @cat_opt.merge!({ :parentId => cat.parent_id}) unless cat.parent_id.blank?
+                @cat_opt.merge!({ :parentId => cat.parent_id }) unless cat.parent_id.blank?
                 xml.category(@cat_opt){ xml  << cat.name }
               end
             }
             xml.offers { # список товаров
               products = Product.in_taxon(@preferred_category).active.master_price_gte(0.001)
-              products = products.on_hand if @config.preferred_wares == "on_hand"
-              products = products.where(:export_to_yandex_market => true).group_by_products_id
+              products = products.select { |p| p.cat.export_to_yandex_market }
+              products = products.on_hand if @config.preferred_wares == 'on_hand'
               products.each do |product|
                 offer(xml, product, product.cat) 
               end
