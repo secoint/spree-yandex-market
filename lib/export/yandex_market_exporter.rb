@@ -56,8 +56,7 @@ module Export
             }
             xml.offers { # список товаров
               products = Product.in_taxon(@preferred_category).active.master_price_gte(0.001)
-              products = products.select { |p| p.cat.export_to_yandex_market }
-              products = products.on_hand if @config.preferred_wares == 'on_hand'
+              products = products.select { |p| p.has_stock? and p.cat.export_to_yandex_market }
               products.each do |product|
                 offer(xml, product, product.cat) 
               end
