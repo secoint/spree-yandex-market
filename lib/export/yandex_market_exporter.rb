@@ -96,7 +96,7 @@ module Export
     # общая часть для всех видов продукции
     def shared_xml(xml, product, cat)
       xml.url "http://#{@host}/id/#{product.id}?utm_source=yandex&utm_medium=market&utm_campaign=market"
-      xml.price product.price
+      xml.price product.variants.map(&:price).min
       xml.currencyId @currencies.first.first
       xml.categoryId cat.id
       xml.picture path_to_url(CGI.escape(product.images.first.attachment.url(:product, false))) unless product.images.empty?
