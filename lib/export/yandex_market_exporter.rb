@@ -4,6 +4,8 @@ require 'nokogiri'
 module Export
   class YandexMarketExporter
     include Rails.application.routes.url_helpers
+    include ActionView::Helpers::SanitizeHelper
+
     attr_accessor :host, :currencies
 
     def helper
@@ -68,13 +70,13 @@ module Export
     private
     
     def offer_vendor_model(xml, product)
-      variants = product.variants
+      variants = product.variants.select { |v| v.count_on_hand > 0 }
       count = variants.length
 
       variants.each do |variant|
-        opt = { :id => product.id, :type => 'vendor.model',
-                :available => variant.count_on_hand > 0 }
+        opt = { :type => 'vendor.model', :available => true }
 
+        opt[:id] = count > 1 ? variant.id : product.id
         opt[:group_id] = product.id if count > 1
         
         xml.offer(opt) do
@@ -83,13 +85,13 @@ module Export
           xml.currencyId @currencies.first.first
           xml.categoryId product.cat.id
           product.images.each do |image|
-            xml.picture path_to_url(CGI.escape(image.attachment.url(:product, false)))
+            xml.picture path_to_url(image.attachment.url(:product, false))
           end
           xml.delivery true
           xml.model product.name
           xml.vendor product.brand.name if product.brand
           xml.vendorCode product.sku
-          xml.description product.description if product.description
+          xml.description strip_tags(product.description) if product.description
           xml.country_of_origin product.country.name if product.country
           variant.option_values.each do |ov|
             unless ov.presentation == 'Без размера'
