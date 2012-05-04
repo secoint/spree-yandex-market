@@ -88,9 +88,9 @@ module Export
             xml.picture path_to_url(image.attachment.url(:product, false))
           end
           xml.delivery true
-          xml.model product.name
           xml.vendor product.brand.name if product.brand
           xml.vendorCode product.sku
+          xml.model product.name
           xml.description strip_tags(product.description) if product.description
           xml.country_of_origin product.country.name if product.country
           variant.option_values.each do |ov|
