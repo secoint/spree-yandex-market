@@ -85,7 +85,7 @@ module Export
           xml.currencyId @currencies.first.first
           xml.categoryId product.cat.id
           product.images.each do |image|
-            xml.picture path_to_url(image.attachment.url(:product, false))
+            xml.picture path_to_url(CGI.escape(image.attachment.url(:product, false)))
           end
           xml.delivery true
           xml.vendor product.brand.name if product.brand
