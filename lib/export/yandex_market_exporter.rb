@@ -106,7 +106,7 @@ module Export
     end
 
     def image_url(image)
-      "#{asset_host(image.to_s)}/#{CGI.escape(image.attachment.url)}"
+      "#{asset_host(image.to_s)}/#{CGI.escape(image.attachment.url(:product, false))}"
     end
 
     def asset_host(source)
