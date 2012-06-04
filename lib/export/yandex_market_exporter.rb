@@ -72,6 +72,12 @@ module Export
       variants = product.variants.select { |v| v.count_on_hand > 0 }
       count = variants.length
 
+      gender = case product.gender
+        when 1 then 'Мужской'
+        when 2 then 'Женский'
+        else ''
+      end
+
       variants.each do |variant|
         opt = { :type => 'vendor.model', :available => true }
 
@@ -97,6 +103,8 @@ module Export
               xml.param ov.presentation, :name => ov.option_type.presentation, :unit => 'BRAND'
             end
           end
+          xml.param gender, :name => 'Пол' if gender.present?
+          xml.param 'Детский', :name => 'Возраст'
         end
       end
     end
