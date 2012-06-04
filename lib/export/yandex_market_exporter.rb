@@ -94,7 +94,7 @@ module Export
           xml.country_of_origin product.country.name if product.country
           variant.option_values.each do |ov|
             unless ov.presentation == 'Без размера'
-              xml.param ov.presentation, :name => ov.option_type.presentation 
+              xml.param ov.presentation, :name => ov.option_type.presentation, :unit => 'BRAND'
             end
           end
         end
