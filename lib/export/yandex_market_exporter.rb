@@ -8,6 +8,10 @@ module Export
 
     attr_accessor :host, :currencies
 
+    def initialize
+      @utms = '?utm_source=yandex&utm_medium=market&utm_campaign=market'
+    end
+
     def helper
       @helper ||= ApplicationController.helpers
     end
@@ -66,7 +70,7 @@ module Export
       end.to_xml
     end
     
-    private
+    protected
     
     def offer_vendor_model(xml, product)
       variants = product.variants.select { |v| v.count_on_hand > 0 }
@@ -85,7 +89,7 @@ module Export
         opt[:group_id] = product.id if count > 1
         
         xml.offer(opt) do
-          xml.url "http://#{@host}/id/#{product.id}?utm_source=yandex&utm_medium=market&utm_campaign=market"
+          xml.url "http://#{@host}/id/#{product.id}#{@utms}"
           xml.price variant.price
           xml.currencyId @currencies.first.first
           xml.categoryId product.cat.id
