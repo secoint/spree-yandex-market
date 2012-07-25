@@ -60,7 +60,7 @@ module Export
 
             xml.offers { # список товаров
               products = Product.in_taxon(@preferred_category).active.master_price_gte(0.001)
-              products = products.uniq.select { |p| p.has_stock? && p.cat.export_to_yandex_market }
+              products = products.uniq.select { |p| p.has_stock? && p.cat.export_to_yandex_market && p.export_to_yandex_market }
               products.each do |product|
                 offer_vendor_model(xml, product) 
               end
