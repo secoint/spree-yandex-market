@@ -107,6 +107,7 @@ module Export
               xml.param ov.presentation, :name => ov.option_type.presentation, :unit => 'BRAND'
             end
           end
+          xml.param product.colour, :name => 'Цвет'
           xml.param gender, :name => 'Пол' if gender.present?
           xml.param 'Детский', :name => 'Возраст'
         end
