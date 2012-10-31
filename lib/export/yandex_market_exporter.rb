@@ -109,7 +109,7 @@ module Export
           end
           xml.param product.colour, :name => 'Цвет'
           xml.param gender, :name => 'Пол' if gender.present?
-          xml.param product.age, :name => 'Возраст'
+          xml.param product.localized_age, :name => 'Возраст'
           xml.param product.picture_type, :name => 'Тип рисунка'
           xml.market_category(product.market_category ? product.market_category : product.brand_name)
         end
