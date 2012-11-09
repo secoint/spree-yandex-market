@@ -42,6 +42,11 @@ namespace :spree_yandex_market do
     generate_export_file 'mail_ru'
   end
 
+  desc "Generates Lookmart export file"
+  task :generate_lookmart => :environment do
+    generate_export_file 'lookmart'
+  end
+
   def generate_export_file(ts='yandex_market')
     require File.expand_path(File.join(Rails.root, "config/environment"))
     require File.join(File.dirname(__FILE__), '..', "export/#{ts}_exporter.rb")
