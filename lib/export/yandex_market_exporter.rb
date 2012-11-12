@@ -112,7 +112,6 @@ module Export
           xml.param gender, :name => 'Пол' if gender.present?
           xml.param product.localized_age, :name => 'Возраст' if product.age
           xml.param product.picture_type, :name => 'Тип рисунка' if product.picture_type
-          xml.param product.size_table.standarted_size_table, :name => 'Размер' if product.size_table
           xml.market_category product.market_category if product.market_category
         end
       end
