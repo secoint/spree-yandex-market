@@ -104,7 +104,8 @@ module Export
           xml.country_of_origin product.country.name if product.country
           variant.option_values.each do |ov|
             unless ov.presentation == 'Без размера'
-              xml.param ov.presentation, :name => ov.option_type.presentation, :unit => 'BRAND'
+              unit = product.size_table ? product.size_table.standarted_size_table : 'BRAND'
+              xml.param ov.presentation, :name => ov.option_type.presentation, :unit => unit
             end
           end
           xml.param product.colour, :name => 'Цвет'
