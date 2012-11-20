@@ -59,7 +59,7 @@ module Export
             }
 
             xml.offers { # список товаров
-              products = Product.in_taxon(@preferred_category).active.master_price_gte(1)
+              products = Product.in_taxon(@preferred_category).active.master_price_gte(1).uniq
               products.each do |product|
                 offer_vendor_model(xml, product)
               end
