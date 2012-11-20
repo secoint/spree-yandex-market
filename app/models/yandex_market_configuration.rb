@@ -6,6 +6,10 @@ class YandexMarketConfiguration < Configuration
   preference :short_name,      :string
   preference :full_name,       :string
   preference :url,             :string
+  preference :platform,        :string
+  preference :version,         :string
+  preference :agency,          :string
+  preference :email,           :string
   preference :local_delivery_cost, :float # стоимость доставки по своему региону
 
   

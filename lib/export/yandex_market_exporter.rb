@@ -8,10 +8,6 @@ module Export
 
     attr_accessor :host, :currencies
 
-    def initialize
-      @utms = '?utm_source=yandex&utm_medium=market&utm_campaign=market'
-    end
-
     def helper
       @helper ||= ApplicationController.helpers
     end
@@ -38,9 +34,13 @@ module Export
 
         xml.yml_catalog(:date => Time.now.to_s(:ym)) {
           xml.shop { # описание магазина
-            xml.name    @config.preferred_short_name
-            xml.company @config.preferred_full_name
-            xml.url     path_to_url('')
+            xml.name      @config.preferred_short_name
+            xml.company   @config.preferred_full_name
+            xml.url       @config.preferred_url
+            xml.platform  @config.preferred_platform
+            xml.version   @config.preferred_version
+            xml.agency    @config.preferred_agency
+            xml.email     @config.preferred_email
             
             xml.currencies { # описание используемых валют в магазине
               @currencies && @currencies.each do |curr|
@@ -59,10 +59,9 @@ module Export
             }
 
             xml.offers { # список товаров
-              products = Product.in_taxon(@preferred_category).active.master_price_gte(0.001)
-              products = products.uniq.select { |p| p.has_stock? && p.cat.export_to_yandex_market && p.export_to_yandex_market }
+              products = Product.in_taxon(@preferred_category).active.master_price_gte(1)
               products.each do |product|
-                offer_vendor_model(xml, product) 
+                offer_vendor_model(xml, product)
               end
             }
           }
@@ -73,60 +72,43 @@ module Export
     protected
     
     def offer_vendor_model(xml, product)
-      variants = product.variants.select { |v| v.count_on_hand > 0 }
-      count = variants.length
-
-      gender = case product.gender
-        when 1 then 'Мужской'
-        when 2 then 'Женский'
-        else ''
-      end
-
-      variants.each do |variant|
-        opt = { :type => 'vendor.model', :available => true }
-
-        opt[:id] = count > 1 ? variant.id : product.id
-        opt[:group_id] = product.id if count > 1
+      opt = { 
+        :id         => product.id,
+        :available  => (product.has_stock?) ? true : false
+      }
         
-        xml.offer(opt) do
-          xml.url "http://#{@host}/id/#{product.id}#{@utms}"
-          xml.price variant.price
-          xml.currencyId @currencies.first.first
-          xml.categoryId product.cat.id
-          xml.market_category product.market_category if product.market_category && product.market_category.present?
-          product.images.each do |image|
-            xml.picture image_url(image)
-          end
-          xml.delivery true
-          xml.vendor product.brand.name if product.brand
-          xml.vendorCode product.sku
-          xml.model product.name
-          xml.description strip_tags(product.description) if product.description
-          xml.country_of_origin product.country.name if product.country
-          variant.option_values.each do |ov|
-            unless ov.presentation == 'Без размера'
-              unit = product.size_table ? product.size_table.standarted_size_table : 'BRAND'
-              xml.param ov.presentation, :name => ov.option_type.presentation, :unit => unit
-            end
-          end
-          xml.param product.colour, :name => 'Цвет'
-          xml.param gender, :name => 'Пол' if gender.present?
-          xml.param product.localized_age, :name => 'Возраст' if product.age
-          xml.param product.picture_type, :name => 'Тип рисунка' if product.picture_type
+      xml.offer(opt) do
+        xml.url path_to_url(product.permalink)
+        xml.price product.price
+        xml.currencyId @currencies.first.first
+        xml.categoryId product.cat.id
+        product.images.take(10).each do |image|
+          xml.picture path_to_url(image.attachment.url(:large, false))
         end
+        xml.store true 
+        xml.pickup true
+        xml.delivery true
+        xml.name "Настольная игра \"#{product.name}\""
+        xml.description strip_tags(product.description) if product.description
+        xml.param players_count_info(product), :name => "Количество игроков"
+        xml.param product.age, :name => 'Рекомендуемый возраст' if product.age
+        xml.param product.learning_time, :name => 'Сложность правил' if product.learning_time
+        xml.param product.gaming_time, :name => 'Продолжительность игры' if product.gaming_time
       end
     end
 
     def path_to_url(path)
       "http://#{@host.sub(%r[^http://],'')}/#{path.sub(%r[^/],'')}"
     end
-
-    def image_url(image)
-      "#{asset_host(image.to_s)}/#{CGI.escape(image.attachment.url(:large, false))}"
-    end
-
-    def asset_host(source)
-      "http://assets0#{(1 + source.hash % 5).to_s + '.' + @host}"
+    
+    def players_count_info(product)
+      if product.min_players == product.max_players
+        product.min_players.to_s
+      elsif product.min_players && !product.max_players
+        product.min_players.to_s
+      else
+        product.min_players.to_s << "-" << product.max_players.to_s
+      end
     end
   end
 end
