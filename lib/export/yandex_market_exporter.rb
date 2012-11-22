@@ -78,7 +78,7 @@ module Export
       }
         
       xml.offer(opt) do
-        xml.url path_to_url(product.permalink)
+        xml.url path_to_url("products/#{product.permalink}")
         xml.price product.price
         xml.currencyId @currencies.first.first
         xml.categoryId product.cat.id
