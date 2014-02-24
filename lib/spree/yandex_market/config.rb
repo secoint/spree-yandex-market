@@ -9,12 +9,11 @@ module Spree
     #   Spree::YandexMarket::Config.set(preferences_hash)  # Set the advanced cart preferences as especified in +preference_hash+
     class Config
       include Singleton
-      include PreferenceAccess
 
       class << self
         def instance
-          return nil unless ActiveRecord::Base.connection.tables.include?('configurations')
-          YandexMarketConfiguration.find_or_create_by_name("Yandex Market configuration")
+          return nil unless ActiveRecord::Base.connection.tables.include?('spree_configurations')
+          Spree::YandexMarketConfiguration.find_or_create_by_name("Yandex Market configuration")
         end
       end
     end

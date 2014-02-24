@@ -1,20 +1,20 @@
 # -*- coding: utf-8 -*-
-class Admin::YandexMarketSettingsController < Admin::BaseController  
+class Spree::Admin::YandexMarketSettingsController < Spree::Admin::BaseController  
   before_filter :get_config
   
   def show
-    @taxons =  Taxon.roots
+    @taxons =  Spree::Taxon.roots
   end
   
   def general
-    @taxons =  Taxon.roots
+    @taxons =  Spree::Taxon.roots
   end
   
   def currency
   end
   
   def ware_property
-    @properties = Property.all
+    @properties = Spree::Property.all
   end
   
   def export_files
@@ -36,7 +36,7 @@ class Admin::YandexMarketSettingsController < Admin::BaseController
     redirect_to export_files_admin_yandex_market_settings_url
   end
   
-  def update
+  def update   
     @config.attributes = params[:preferences]
     @config.save!
     

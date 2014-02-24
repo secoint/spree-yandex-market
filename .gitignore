@@ -2,3 +2,5 @@
 *.tmproj
 *.sublime-project
 *.sublime-workspace
+
+nbproject/

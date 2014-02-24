@@ -1,4 +1,4 @@
-Admin::TaxonsController.class_eval do
+Spree::Admin::TaxonsController.class_eval do
   after_filter :update_descendants_ym_flag, :only => :update
 
   private
