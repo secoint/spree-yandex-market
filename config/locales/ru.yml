@@ -10,11 +10,14 @@ ru:
     list_currency: Список валют
     export_wares: Отбор товара
     export_files: Сформированные файлы
+    export_files_for_ym: Сформированные файлы для Яндекс.Маркет
+    export_files_for_wm: Сформированные файлы для Викимарт
     export_file: Ссылка на файл
     what_wares_export: Какой товар выгружать в Яндекс.Маркет
     all_active_wares: Весь активный товар 
     on_hand_wares: Только товар который есть в наличии
-    run_generate_file: Запустить формирование файла
+    run_generate_file_ym: Запустить формирование файла для Яндекс.Маркет
+    run_generate_file_wm: Запустить формирование файла для Wikimart
     download: Скачать
     name: Наименование
     date: Дата\Время

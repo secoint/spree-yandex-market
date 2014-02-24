@@ -25,10 +25,23 @@ class Spree::Admin::YandexMarketSettingsController < Spree::Admin::BaseControlle
     e = @export_files.find {|x| x.first == "yandex_market.xml" }
     @export_files.reject! {|x| x.first == "yandex_market.xml" }
     @export_files.unshift(e) unless e.blank?
+    
+    directory = File.join(Rails.root, 'public', 'wikimart', '**', '*')
+    @export_files_wikimart =  Dir[directory].map {|x| [File.basename(x), (File.file?(x) ? File.mtime(x) : 0)] }.
+      sort{|x,y| y.last <=> x.last }
+    e = @export_files_wikimart.find {|x| x.first == "wikimart.xml" }
+    @export_files_wikimart.reject! {|x| x.first == "wikimart.xml" }
+    @export_files_wikimart.unshift(e) unless e.blank?
   end
   
   def run_export
-    command = %{cd #{Rails.root} && RAILS_ENV=#{Rails.env} rake spree_yandex_market:generate_ym &}
+    command = case params[:exporter]
+    when 'yandex_market'
+      %{cd #{Rails.root} && RAILS_ENV=#{Rails.env} rake spree_yandex_market:generate_ym &}
+    when 'wikimart'
+      %{cd #{Rails.root} && RAILS_ENV=#{Rails.env} rake spree_yandex_market:generate_wikimart &}
+    end
+    
     logger.info "[ yandex market ] Запуск формирование файла экспорта из блока администрирования "
     logger.info "[ yandex market ] команда - #{command} "
     system command

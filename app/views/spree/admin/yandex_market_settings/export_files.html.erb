@@ -2,14 +2,16 @@
 <div class='toolbar'>
   <ul class='actions'>
     <li id="new_ot_link">
-      <%= link_to t('configure_yandex_market.run_generate_file'), run_export_admin_yandex_market_settings_path %>
-      
+      <%= link_to t('configure_yandex_market.run_generate_file_ym'), run_export_admin_yandex_market_settings_path(:exporter => 'yandex_market') %>
+    </li>
+    <li id="new_ot_link">
+      <%= link_to t('configure_yandex_market.run_generate_file_wm'), run_export_admin_yandex_market_settings_path(:exporter => 'wikimart') %>
     </li>
   </ul>
   <br class='clear' />
 </div>
 <div id="run_generate_export"></div>
-<%= content_tag :h3, t('configure_yandex_market.export_files'), :class => "name" %>
+<%= content_tag :h3, t('configure_yandex_market.export_files_for_ym'), :class => "name" %>
 <table class="index">
   <tr>
     <th><%= t('configure_yandex_market.name') %></th>
@@ -21,6 +23,22 @@
     <td><%= ef.first %></td>
     <td><%= ef.last %></td>
     <td class="actions"><%= link_to t("configure_yandex_market.download"), url_for("/yandex_market/#{ef.first}") %> </td>
+  </tr>
+   <% end -%>
+</table>
+
+<%= content_tag :h3, t('configure_yandex_market.export_files_for_wm'), :class => "name" %>
+<table class="index">
+  <tr>
+    <th><%= t('configure_yandex_market.name') %></th>
+    <th><%= t('configure_yandex_market.date') %></th>
+    <th>&nbsp;</th>
+  </tr>
+   <% @export_files_wikimart && @export_files_wikimart.each do |ef| -%>
+  <tr>
+    <td><%= ef.first %></td>
+    <td><%= ef.last %></td>
+    <td class="actions"><%= link_to t("configure_yandex_market.download"), url_for("/wikimart/#{ef.first}") %> </td>
   </tr>
    <% end -%>
 </table>
