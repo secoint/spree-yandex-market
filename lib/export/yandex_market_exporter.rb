@@ -51,6 +51,7 @@ module Export
                 end
               end
             }
+            
             xml.offers { # список товаров
               products = Spree::Product.active.master_price_gte(0.001)
               products = products.on_hand if @config.preferred_wares == "on_hand"
@@ -73,8 +74,6 @@ module Export
     end
     
     def offer(xml,product, cat)
-      product_properties = { }
-      product.product_properties.map {|x| product_properties[x.property_name] = x.value }
       offer_simple(xml, product, cat)
     end
     
@@ -95,11 +94,11 @@ module Export
         xml.delivery            true
         xml.local_delivery_cost @config.preferred_local_delivery_cost unless @config.preferred_local_delivery_cost.blank?
         xml.name                product.name
-        xml.vendor              product.manufacturer.try(:name)
-        xml.vendorCode          product_properties[@config.preferred_vendor_code]
-        xml.description         product.description
-        xml.country_of_origin   product_properties[@config.preferred_country_of_manufacturer] if product_properties[@config.preferred_country_of_manufacturer]
-        xml.downloadable false   
+        xml.vendor              product.manufacturer.try(:name) if product.methods.include? :manufacturer
+        xml.vendorCode          product_properties[@config.preferred_vendor_code] if product_properties[@config.preferred_country_of_manufacturer].present?
+        xml.description         product.description if product.description.present?
+        xml.country_of_origin   product_properties[@config.preferred_country_of_manufacturer] if product_properties[@config.preferred_country_of_manufacturer].present?
+        xml.downloadable        false
       }
     end
     
