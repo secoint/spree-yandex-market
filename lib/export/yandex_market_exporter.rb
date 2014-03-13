@@ -23,9 +23,9 @@ module Export
       # Nokogiri::XML::Builder.new({ :encoding =>"utf-8"}, SCHEME) do |xml|
       Nokogiri::XML::Builder.new(:encoding =>"utf-8") do |xml|
         xml.doc.create_internal_subset('yml_catalog',
-                                       nil,
-                                       "shops.dtd"
-                                       )
+          nil,
+          "shops.dtd"
+        )
 
         xml.yml_catalog(:date => Time.now.to_s(:ym)) {
           
@@ -84,6 +84,16 @@ module Export
       xml.categoryId cat.id
       xml.picture path_to_url(CGI.escape(product.images.first.attachment.url(:product, false))) unless product.images.empty?
     end
+    
+    def individual_xml(xml, product, cat, product_properties = {})
+      xml.delivery            true
+      xml.local_delivery_cost @config.preferred_local_delivery_cost unless @config.preferred_local_delivery_cost.blank?
+      xml.name                product.name
+      xml.vendorCode          product_properties[@config.preferred_vendor_code] if product_properties[@config.preferred_country_of_manufacturer].present?
+      xml.description         product.description if product.description.present?
+      xml.country_of_origin   product_properties[@config.preferred_country_of_manufacturer] if product_properties[@config.preferred_country_of_manufacturer].present?
+      xml.downloadable        false
+    end
 
     def offer_simple(xml, product, cat)
       product_properties = { }
@@ -91,14 +101,7 @@ module Export
       opt = { :id => product.id,  :available => product.available? }
       xml.offer(opt) {
         shared_xml(xml, product, cat)
-        xml.delivery            true
-        xml.local_delivery_cost @config.preferred_local_delivery_cost unless @config.preferred_local_delivery_cost.blank?
-        xml.name                product.name
-        xml.vendor              product.manufacturer.try(:name) if product.methods.include? :manufacturer
-        xml.vendorCode          product_properties[@config.preferred_vendor_code] if product_properties[@config.preferred_country_of_manufacturer].present?
-        xml.description         product.description if product.description.present?
-        xml.country_of_origin   product_properties[@config.preferred_country_of_manufacturer] if product_properties[@config.preferred_country_of_manufacturer].present?
-        xml.downloadable        false
+        individual_xml(xml, product, cat, product_properties)
       }
     end
     
